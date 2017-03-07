@@ -15,23 +15,80 @@
 		</canvas>
 	</body>
 	<script type="text/javascript">
-			var MAIN_CANVAS = document.getElementById("main_canvas");
+			var GAME = {
+				canvas : document.getElementById("main_canvas")
+			};
 
-			console.log( MAIN_CANVAS );
+			
+
+
 
 			var chicken = create_canvas_object({
-				  x : 50
-				, y : 50
-				, width : 20
+				  x      : 50
+				, y      : 50
+				, width  : 20
 				, height : 20
-				, color : 'red'
+				, 'background-color'  : 'red'
+				, img_src : 'chicken.svg'
 			});
 
-          	function create_canvas_object( args ) {
-          		var canvas_object = MAIN_CANVAS.getContext('2d'); // Assume canvas objects are always 2D
-          		    canvas_object.fillStyle = args.color;
+
+
+
+
+
+
+
+			/* function game_object()
+				args can include:
+				{
+					x
+					y
+					width
+					height
+					img_src
+					background-color
+				}
+			*/
+			function game_object( args ) {
+				/*** Properties ***/
+				var game_object = this;
+
+				game_object.attr.width   = args.width;
+				game_object.attr.height  = args.height;
+				game_object.attr.position = { 
+					  x : args.x || 0
+					, y : args.y || 0
+				};
+
+				game_object.attr.canvas_object = create_canvas_object({
+					  x 	 			 : args.x
+					, y 	 			 : args.y
+					, width  			 : args.width
+					, height 			 : args.height
+					, 'background-color' : args['background-color']
+				});
+
+				game_object.position = function(args) {
+					if ( args ) {
+						if ( args.x !== undefined ) game_object.attr.position.x = args.x;
+						if ( args.y !== undefined ) game_object.attr.position.y = args.y;
+					}
+					else {
+						return game_object.attr.position;
+					}
+				};
+			}
+
+          	function create_canvas_object(args) {
+          		var canvas_object = GAME.canvas.getContext('2d'); // Assume canvas objects are always 2D
+
+          			if ( args['background-color'] )
+          				canvas_object.fillStyle = args['background-color'];
+
           			canvas_object.fillRect( args.x, args.y, args.width, args.height );
-          			canvas_object.stroke(); 
+
+          			canvas_object.stroke(); // Draw
           	}
 		</script>
 </html>
