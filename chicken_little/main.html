@@ -1,4 +1,37 @@
+<!DOCTYPE html>
 <html>
-	
-	
+	<head>
+		<meta charset="utf-8"/>
+		<style type="text/css">
+			#main_canvas {
+				border : 1px solid #bbbbbb;
+				width : 400px;
+				height : 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="main_canvas">	
+		</canvas>
+	</body>
+	<script type="text/javascript">
+			var MAIN_CANVAS = document.getElementById("main_canvas");
+
+			console.log( MAIN_CANVAS );
+
+			var chicken = create_canvas_object({
+				  x : 50
+				, y : 50
+				, width : 20
+				, height : 20
+				, color : 'red'
+			});
+
+          	function create_canvas_object( args ) {
+          		var canvas_object = MAIN_CANVAS.getContext('2d'); // Assume canvas objects are always 2D
+          		    canvas_object.fillStyle = args.color;
+          			canvas_object.fillRect( args.x, args.y, args.width, args.height );
+          			canvas_object.stroke(); 
+          	}
+		</script>
 </html>
