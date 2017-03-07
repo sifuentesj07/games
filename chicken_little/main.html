@@ -4,12 +4,9 @@
 		<meta charset="utf-8"/>
 		<style type="text/css">
 			#main_canvas {
-				border     : 1px solid #bbbbbb;
-				background : url('desert_background.svg') center content-box;
-				width      : 1100px;
-				height     : 600px;
-				margin     : 0px auto;
-				display    : flex;
+				border : 1px solid #bbbbbb;
+				width : 400px;
+				height : 200px;
 			}
 		</style>
 	</head>
@@ -46,11 +43,10 @@
 			/****************** Driving Code *******************/
 
 			var chicken = new game_object({
-				  x      : 50
-				, y      : 50
+				  x      : 10
+				, y      : 100
 				, width  : 20
 				, height : 20
-				, 'background-color' : 'red'
 				, img_src : 'chicken.svg'
 			});
 
@@ -85,6 +81,7 @@
 
 				game_object.attr.width   = args.width;
 				game_object.attr.height  = args.height;
+				game_object.attr.img_src = args.img_src;
 				game_object.attr.position = { 
 					  x : args.x || 0
 					, y : args.y || 0
@@ -115,21 +112,39 @@
 				game_object.draw = function() {
 					var canvas_object = game_object.attr.canvas_object;
 
+					// Clear object
 					canvas_object.clearRect(0, 0, GAME.canvas.width, GAME.canvas.height);
 
-					canvas_object.fillRect( 
-						  game_object.attr.position.x
-						, game_object.attr.position.y
-						, game_object.attr.width
-						, game_object.attr.height 
-					);
+					if ( game_object.attr.img_src ) {
+						var img_element = document.createElement('img');
+						    img_element.setAttribute('src', game_object.attr.img_src );
+						
+    					canvas_object.drawImage(
+    						img_element
+    						, game_object.attr.position.x
+    						, game_object.attr.position.y
+    						, game_object.attr.width
+							, game_object.attr.height 
+    					);
+					}
+					else {
+						canvas_object.fillRect( 
+							  game_object.attr.position.x
+							, game_object.attr.position.y
+							, game_object.attr.width
+							, game_object.attr.height 
+						);
+					}
 				}
 			}
 
           	function create_canvas_object(args) {
           		var canvas_object = GAME.canvas.getContext('2d'); // Assume canvas objects are always 2D
 
-      			if ( args['background-color'] )
+          		if ( args.img_src ) {
+
+          		}
+      			else if ( args['background-color'] )
       				canvas_object.fillStyle = args['background-color'];
 
           		return canvas_object;
