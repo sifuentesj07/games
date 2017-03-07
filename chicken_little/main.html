@@ -15,30 +15,55 @@
 		</canvas>
 	</body>
 	<script type="text/javascript">
+			/****************** Globals *******************/
 			var GAME = {
-				canvas : document.getElementById("main_canvas")
+				  canvas : document.getElementById("main_canvas")
+				, game_objects : []
+				, gravity : 1
+				, start : function() {
+					GAME.draw_interval = setInterval( 
+						function() {
+							GAME.draw();
+						}
+						, 100
+					);
+				}
+
+				, draw : function() {
+					// Redraw all objects
+					var index = GAME.game_objects.length;
+					while ( index-- ) {
+						GAME.game_objects[index].draw();
+					}
+				}
 			};
 
 			
 
+			/****************** Driving Code *******************/
 
-
-			var chicken = create_canvas_object({
+			var chicken = new game_object({
 				  x      : 50
 				, y      : 50
 				, width  : 20
 				, height : 20
-				, 'background-color'  : 'red'
+				, 'background-color' : 'red'
 				, img_src : 'chicken.svg'
 			});
 
 
+			GAME.start();
 
+			setInterval( 
+				function() {
+					chicken.attr.position.x = chicken.attr.position.x + 1;
+				}
+				, 200
+			);
 
+		
 
-
-
-
+			/****************** Function Definitions *******************/
 			/* function game_object()
 				args can include:
 				{
@@ -53,6 +78,7 @@
 			function game_object( args ) {
 				/*** Properties ***/
 				var game_object = this;
+					game_object.attr = {};
 
 				game_object.attr.width   = args.width;
 				game_object.attr.height  = args.height;
@@ -69,6 +95,10 @@
 					, 'background-color' : args['background-color']
 				});
 
+
+				GAME.game_objects.push( game_object );
+
+				/*** Methods ***/
 				game_object.position = function(args) {
 					if ( args ) {
 						if ( args.x !== undefined ) game_object.attr.position.x = args.x;
@@ -78,17 +108,28 @@
 						return game_object.attr.position;
 					}
 				};
+
+				game_object.draw = function() {
+					var canvas_object = game_object.attr.canvas_object;
+
+					canvas_object.clearRect(0, 0, GAME.canvas.width, GAME.canvas.height);
+
+					canvas_object.fillRect( 
+						  game_object.attr.position.x
+						, game_object.attr.position.y
+						, game_object.attr.width
+						, game_object.attr.height 
+					);
+				}
 			}
 
           	function create_canvas_object(args) {
           		var canvas_object = GAME.canvas.getContext('2d'); // Assume canvas objects are always 2D
 
-          			if ( args['background-color'] )
-          				canvas_object.fillStyle = args['background-color'];
+      			if ( args['background-color'] )
+      				canvas_object.fillStyle = args['background-color'];
 
-          			canvas_object.fillRect( args.x, args.y, args.width, args.height );
-
-          			canvas_object.stroke(); // Draw
+          		return canvas_object;
           	}
 		</script>
 </html>
