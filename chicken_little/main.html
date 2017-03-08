@@ -3,32 +3,30 @@
 	<head>
 		<meta charset="utf-8"/>
 		<style type="text/css">
+            html, body {
+                margin : 0px;
+            }
 			#main_canvas {
 				border     : 1px solid #bbbbbb;
 				background : url('desert_background.svg') center content-box;
-				width      : 1100px;
-				height     : 600px;
-				margin     : 0px auto;
-				display    : flex;
 			}
 		</style>
 	</head>
 	<body>
-		<canvas id="main_canvas">	
-		</canvas>
+		<canvas id="main_canvas"></canvas>
 	</body>
 	<script type="text/javascript">
 			/****************** Globals *******************/
 			var GAME = {
 				  canvas : document.getElementById("main_canvas")
 				, game_objects : []
-				, gravity : 1
+				, fps : 60
 				, start : function() {
-					GAME.draw_interval = setInterval( 
+					GAME.draw_interval = setInterval(
 						function() {
 							GAME.draw();
 						}
-						, 100
+						, 1000 / GAME.fps
 					);
 				}
 
@@ -41,29 +39,30 @@
 				}
 			};
 
-			
+            GAME.canvas.width  = 800;
+            GAME.canvas.height = 400;
 
 			/****************** Driving Code *******************/
 
 			var chicken = new game_object({
-				  x      : 10
-				, y      : 100
-				, width  : 20
-				, height : 20
+				  x      : 0
+				, y      : 0
+				, width  : 50
+				, height : 50
 				, img_src : 'chicken.svg'
 			});
 
 
 			GAME.start();
 
-			setInterval( 
+			setInterval(
 				function() {
-					chicken.attr.position.x = chicken.attr.position.x + 1;
+					chicken.attr.position.x = chicken.attr.position.x + .1;
 				}
-				, 200
+				, 10
 			);
 
-		
+
 
 			/****************** Function Definitions *******************/
 			/* function game_object()
@@ -80,26 +79,17 @@
 			function game_object( args ) {
 				/*** Properties ***/
 				var game_object = this;
-					game_object.attr = {};
-
-				game_object.attr.width   = args.width;
-				game_object.attr.height  = args.height;
-				game_object.attr.img_src = args.img_src;
-				game_object.attr.position = { 
-					  x : args.x || 0
-					, y : args.y || 0
-				};
-
-				game_object.attr.canvas_object = create_canvas_object({
-					  x 	 			 : args.x
-					, y 	 			 : args.y
-					, width  			 : args.width
-					, height 			 : args.height
-					, 'background-color' : args['background-color']
-				});
-
+			    game_object.attr = {
+                      width   : args.width
+                    , height  : args.height
+                    , img_src : args.img_src
+                    , position : { x : args.x || 0, y : args.y || 0}
+                    , canvas_object : create_canvas_object()
+                };
 
 				GAME.game_objects.push( game_object );
+
+
 
 				/*** Methods ***/
 				game_object.position = function(args) {
@@ -116,26 +106,28 @@
 					var canvas_object = game_object.attr.canvas_object;
 
 					// Clear object
-					canvas_object.clearRect(0, 0, GAME.canvas.width, GAME.canvas.height);
+				    canvas_object.clearRect(0, 0, GAME.canvas.width, GAME.canvas.height);
 
 					if ( game_object.attr.img_src ) {
-						var img_element = document.createElement('img');
-						    img_element.setAttribute('src', game_object.attr.img_src );
-						
-    					canvas_object.drawImage(
-    						img_element
-    						, game_object.attr.position.x
-    						, game_object.attr.position.y
-    						, game_object.attr.width
-							, game_object.attr.height 
-    					);
+                        if ( ! game_object.attr.image ) {
+                            game_object.attr.image     = new Image();
+                            game_object.attr.image.src = args.img_src;
+                        }
+
+                        canvas_object.drawImage(
+                              game_object.attr.image
+                            , game_object.attr.position.x
+                            , game_object.attr.position.y
+                            , game_object.attr.width
+                            , game_object.attr.height
+                        );
 					}
-					else {
-						canvas_object.fillRect( 
+					else { // shape??
+						canvas_object.fillRect(
 							  game_object.attr.position.x
 							, game_object.attr.position.y
 							, game_object.attr.width
-							, game_object.attr.height 
+							, game_object.attr.height
 						);
 					}
 				}
@@ -144,11 +136,10 @@
           	function create_canvas_object(args) {
           		var canvas_object = GAME.canvas.getContext('2d'); // Assume canvas objects are always 2D
 
-          		if ( args.img_src ) {
-
-          		}
-      			else if ( args['background-color'] )
-      				canvas_object.fillStyle = args['background-color'];
+                if ( args ) {
+              		if ( args['background-color'] )
+          				canvas_object.fillStyle = args['background-color'];
+                }
 
           		return canvas_object;
           	}
